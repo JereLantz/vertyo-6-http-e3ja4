@@ -4,13 +4,23 @@ import TableRow from "./components/TableRow"
 function App() {
     const [dataDisplay, setDataDisplay] = useState()
     const [isFetching, setIsFetching] = useState(false)
+    const [error, setError] = useState()
 
     useEffect(()=>{
         async function fetchUsers(){
             setIsFetching(true)
-            const response = await fetch("https://jsonplaceholder.typicode.com/users")
-            const resData = await response.json()
-            setDataDisplay(resData)
+            try{
+                const response = await fetch("https://jsonplaceholder.typicode.com/users")
+                const resData = await response.json()
+                setDataDisplay(resData)
+
+                if(!response.ok){
+                    throw new Error("Failed to fetch data from the server.")
+                }
+            }
+            catch(error){
+                setError({message:error.message || "Error fetching data from server"})
+            }
 
             setIsFetching(false)
         }
@@ -21,8 +31,9 @@ function App() {
   return (
     <>
       <h1>Hello world</h1>
-      {isFetching && <p>Fetchin data...</p>}
-      {!isFetching && dataDisplay && <div>
+      {error && <p className='error-message'>{error.message}</p>}
+      {!error && isFetching && <p>Fetchin data...</p>}
+      {!error && !isFetching && dataDisplay && <div>
           <table>
               <thead>
                   <tr>
