@@ -3,12 +3,16 @@ import TableRow from "./components/TableRow"
 
 function App() {
     const [dataDisplay, setDataDisplay] = useState()
+    const [isFetching, setIsFetching] = useState(false)
 
     useEffect(()=>{
         async function fetchUsers(){
+            setIsFetching(true)
             const response = await fetch("https://jsonplaceholder.typicode.com/users")
             const resData = await response.json()
             setDataDisplay(resData)
+
+            setIsFetching(false)
         }
 
         fetchUsers()
@@ -17,7 +21,8 @@ function App() {
   return (
     <>
       <h1>Hello world</h1>
-      {dataDisplay && <div>
+      {isFetching && <p>Fetchin data...</p>}
+      {!isFetching && dataDisplay && <div>
           <table>
               <thead>
                   <tr>
@@ -26,9 +31,9 @@ function App() {
                       <th>Email</th>
                   </tr>
               </thead>
-      <tbody>
-          <TableRow rowsData={dataDisplay}/>
-      </tbody>
+              <tbody>
+                  <TableRow rowsData={dataDisplay}/>
+              </tbody>
           </table>
       </div> }
     </>
